@@ -1,0 +1,113 @@
+%what the columns of .dat file are
+%  1   Ensemble counter                 (1-16777216)
+%  2   Status
+%  3   Velocity (Beam1|X)               (m/s)
+%  4  Velocity (Beam2|Y)               (m/s)
+%  5   Velocity (Beam3|Z)               (m/s)
+%  6   Velocity (Beam4|Z2)              (m/s)
+%  7   Amplitude (Beam1)                (counts)
+%  8   Amplitude (Beam2)                (counts)
+%  9   Amplitude (Beam3)                (counts)
+% 10   Amplitude (Beam4)                (counts)
+% 11   SNR (Beam1)                      (dB)
+% 12   SNR (Beam2)                      (dB)
+% 13   SNR (Beam3)                      (dB)
+% 14   SNR (Beam4)                      (dB)
+% 15   Correlation (Beam1)              (%)
+% 16   Correlation (Beam2)              (%)
+% 17   Correlation (Beam3)              (%)
+% 18   Correlation (Beam4)              (%)
+
+%row, column, dimesion
+tic();
+data = load('30.9556cm.dat');
+data(:,:,2) = load('31.2604.dat');
+data(:,:,3) = load('31.5652cm.dat'); %assumed centerline
+data(:,:,4) = load('31.87cm.dat');
+data(:,:,5) = load('32.1748cm.dat');
+data(:,:,6) = load('32.4796cm.dat');
+data(:,:,7) = load('32.7844.dat');
+data(:,:,8) = load('33.394cm.dat');
+data(:,:,9) = load('34.0036cm.dat');
+data(:,:,10) = load('34.6132cm.dat');
+data(:,:,11) = load('35.2228cm.dat');
+data(:,:,12) = load('35.8324cm.dat');
+data(:,:,13) = load('36.442cm.dat');
+data(:,:,14) = load('37.0516cm.dat');
+data(:,:,15) = load('37.6612cm.dat');
+data(:,:,16) = load('38.2708cm.dat');
+data(:,:,17) = load('38.8804cm.dat');
+%load all the .dats?
+%for each: make arrays of columns and put like with like?
+% to get one column: xvel = X30_9556cm(:,3)
+%maybe rename?  I guess nothing will be better?
+%how does filtering work....  
+N = size(data);
+R = N(1); %number of rows %16384
+C = N(2); %number of columns %18
+D = N(3); % how many sets of datas %D for dimensions %17
+toc(); %loading the data takes a while ~83 sec
+for i = 1:D
+    xvelmean(i)=mean(data(:,3,i));
+    yvelmean(i)= mean(data(:,4,i));
+    zvelmean1(i) = mean(data(:,5,i));
+    zvelmean2(i) = mean(data(:,6,i));
+    zvelmean(i) = mean((data(:,5,i)+mean(data(:,6,i))))/2;
+    corrx(i) = mean(data(:,15,i));
+end
+for i = 1:D 
+    for j = 1:R
+     xvel(j,1,i) = data(j,3,i)-xvelmean(i);
+     yvel(j,1,i) = data(j,4,i)-yvelmean(i);
+     zvel1(j,1,i) = data(j,5,i) -zvelmean1(i);
+     zvel2(j,1,i) =data(j,6,i) -zvelmean2(i);
+     zvel(j,1,i) = (zvel1(j,1,i) +zvel2(j,1,i))/2;
+    end
+end
+%hists for xvel   normality 2 looks really good, not that its super important...
+
+%these are the heights 
+xaxis = [30.9556,31.2604,31.5652,31.87,32.1748,32.4796,32.7844,33.394,34.0036,34.6132,35.2228,35.8324,36.442,37.0516,37.6612,38.2708,38.8804];
+figure();
+plot(xaxis,xvelmean,'c',[30 40], [0 0],'r');
+title('meanx');
+figure();
+plot(yvelmean);
+title('meany');
+figure();
+plot(zvelmean1);
+title('z1mean');
+figure();
+plot(zvelmean2);
+title('z2mean');
+figure();
+plot(corrx);
+title('corrx');
+grid;
+
+
+plot(data(:,:,1))
+
+%%%%%%%U bar(z/r1/2)/U0%%%%%%%%%%%
+
+%%%%%%%V bar(z/r1/2)/U0%%%%%%%%%%%
+
+%%%%%%%W bar(z/r1/2)/U0%%%%%%%%%%%
+
+%%%%%%%sqrt(U'2 bar((z/r1/2))/U0%%%%%%%%%%%
+
+%%%%%%%sqrt(V'2 bar((z/r1/2))/U0%%%%%%%%%%%
+
+%%%%%%%sqrt(W'2 bar((z/r1/2))/U0%%%%%%%%%%%
+
+%%%%%%%(U'V' bar((z/r1/2))/U0^2%%%%%%%%%%%
+
+%%%%%%%(U'W' bar((z/r1/2))/U0^2%%%%%%%%%%%
+
+%%%%%%%(V'W' bar((z/r1/2))/U0^2%%%%%%%%%%%
+
+%%%%PDF's of u'/U0, v'/U0, w'/U0 @ 3 rep locations%%%%%%%%%%
+
+
+
+
